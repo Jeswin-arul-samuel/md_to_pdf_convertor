@@ -34,21 +34,21 @@ After the trial, purchase a lifetime license to continue using the app:
 
 ## Download
 
+> **All downloads are free.** The app includes a 30-day trial. [Purchase a license](https://jeswinarulsamuel.gumroad.com/l/ojiwme) after the trial to continue using.
+
 ### Windows
 
-| Package | Description | Download |
-|---------|-------------|----------|
-| **Setup Installer** | Full installer with Start Menu shortcuts | [Download](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter.Setup.1.0.0.exe) |
-| **Portable** | No installation required, run directly | [Download](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter-Portable-1.0.0.exe) |
+| Package | Description | |
+|---------|-------------|:---:|
+| **Setup Installer** | Full installer with Start Menu shortcuts | [![Download](https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter.Setup.1.0.0.exe) |
+| **Portable** | No installation required, run directly | [![Download](https://img.shields.io/badge/Download-Portable.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter-Portable-1.0.0.exe) |
 
 ### Linux
 
-| Package | Description | Download |
-|---------|-------------|----------|
-| **Debian/Ubuntu (.deb)** | For Debian-based distributions | [Download](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/md_to_pdf_1.0.0_amd64.deb) |
-| **AppImage** | Universal Linux package | [Download](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter-1.0.0.AppImage) |
-
-> **All downloads are free.** The app includes a 30-day trial. [Purchase a license](https://jeswinarulsamuel.gumroad.com/l/ojiwme) after the trial to continue using.
+| Package | Description | |
+|---------|-------------|:---:|
+| **Debian/Ubuntu** | For Debian-based distributions | [![Download](https://img.shields.io/badge/Download-.deb-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/md_to_pdf_1.0.0_amd64.deb) |
+| **AppImage** | Universal Linux package | [![Download](https://img.shields.io/badge/Download-AppImage-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v1.1.0/MD.to.PDF.Converter-1.0.0.AppImage) |
 
 ---
 
