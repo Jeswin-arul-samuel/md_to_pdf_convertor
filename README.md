@@ -267,7 +267,13 @@ Output files will be in the `dist/` folder.
 
 ## License
 
-ISC License - See [LICENSE](LICENSE) for details.
+**Source Available - Non-Commercial**
+
+Free for personal use. Commercial use requires a paid license.
+
+See [LICENSE](LICENSE) for full details.
+
+For commercial licensing: jeswin.arul.samuel@gmail.com
 
 ---
 

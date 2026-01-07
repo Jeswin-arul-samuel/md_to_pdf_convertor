@@ -23,7 +23,7 @@
     "puppeteer"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE",
   "type": "commonjs",
   "dependencies": {
     "marked": "^17.0.1",
