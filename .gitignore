@@ -40,3 +40,6 @@ Desktop.ini
 # Electron builder cache
 .cache/
 builder-effective-config.yaml
+
+# License key generator (keep private)
+generate-keys.js

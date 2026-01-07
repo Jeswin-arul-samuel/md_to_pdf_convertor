@@ -4,7 +4,21 @@ A beautiful desktop application to convert Markdown files to PDF with live previ
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
-![License](https://img.shields.io/badge/license-ISC-green)
+![License](https://img.shields.io/badge/license-Source%20Available-orange)
+
+## Free Trial & Purchase
+
+**30-Day Free Trial** - Try all features with no limitations for 30 days.
+
+After the trial, purchase a lifetime license to continue using the app:
+
+[![Purchase License](https://img.shields.io/badge/Purchase-$12.99-purple?style=for-the-badge)](https://jeswinarulsamuel.gumroad.com/l/ojiwme)
+
+- One-time payment - **no subscription**
+- Lifetime access to all features
+- Free updates included
+
+---
 
 ## Features
 
@@ -265,15 +279,29 @@ Output files will be in the `dist/` folder.
 
 ---
 
+## Activating Your License
+
+After purchasing, you'll receive a license key via email.
+
+1. Open the app
+2. Click on the **"Trial"** badge in the header
+3. Enter your license key (format: `MDPDF-XXXX-XXXX-XXXX-XXXX`)
+4. Click **"Activate"**
+
+Your license is tied to your installation and provides unlimited access forever.
+
+---
+
 ## License
 
 **Source Available - Non-Commercial**
 
-Free for personal use. Commercial use requires a paid license.
+- **Personal use**: Free 30-day trial, then $12.99 lifetime license
+- **Commercial use**: Requires a paid license
 
 See [LICENSE](LICENSE) for full details.
 
-For commercial licensing: jeswin.arul.samuel@gmail.com
+For commercial licensing inquiries: jeswin.arul.samuel@gmail.com
 
 ---
 

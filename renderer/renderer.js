@@ -1,6 +1,7 @@
 let selectedFiles = [];
 let customCssPath = null;
 let selectedFileIndex = null;
+let licenseStatus = null;
 
 // Style options state with defaults
 let styleOptions = {
@@ -427,6 +428,12 @@ convertBtn.addEventListener('click', async () => {
     return;
   }
 
+  // Check if user can convert (license/trial check)
+  const canConvert = await checkCanConvert();
+  if (!canConvert) {
+    return;
+  }
+
   // If only one file, use direct save dialog
   if (selectedFiles.length === 1) {
     showStatus('Converting...', 'processing');
@@ -438,6 +445,10 @@ convertBtn.addEventListener('click', async () => {
     if (result.canceled) return;
 
     if (result.successCount > 0) {
+      // Record conversion for trial tracking
+      await window.electron.recordConversion();
+      await updateLicenseStatus();
+
       showStatus('Success! Converted 1 file', 'success');
       await window.electron.showMessage({
         type: 'info',
@@ -482,6 +493,9 @@ convertBtn.addEventListener('click', async () => {
     return;
   }
 
+  // Update license status after conversions
+  await updateLicenseStatus();
+
   // Show status
   if (result.successCount > 0 && result.failCount === 0) {
     showStatus(`Success! Converted ${result.successCount} file(s)`, 'success');
@@ -506,8 +520,169 @@ convertBtn.addEventListener('click', async () => {
   }
 });
 
+
 // Show status message
 function showStatus(message, type) {
   statusDiv.textContent = message;
   statusDiv.className = `status ${type}`;
 }
+
+// ==================== LICENSE MANAGEMENT ====================
+
+const licenseStatusDiv = document.getElementById('licenseStatus');
+const licenseBadge = document.getElementById('licenseBadge');
+const licenseInfo = document.getElementById('licenseInfo');
+const licenseModal = document.getElementById('licenseModal');
+const trialExpiredModal = document.getElementById('trialExpiredModal');
+const licenseKeyInput = document.getElementById('licenseKeyInput');
+const licenseError = document.getElementById('licenseError');
+const activateLicenseBtn = document.getElementById('activateLicense');
+const cancelLicenseBtn = document.getElementById('cancelLicense');
+const enterLicenseKeyBtn = document.getElementById('enterLicenseKey');
+
+// Update license status display
+async function updateLicenseStatus() {
+  try {
+    licenseStatus = await window.electron.getLicenseStatus();
+
+    if (licenseStatus.licensed) {
+      licenseBadge.textContent = 'Licensed';
+      licenseBadge.className = 'license-badge licensed';
+      licenseInfo.textContent = 'Unlimited access';
+    } else if (licenseStatus.trialExpired) {
+      licenseBadge.textContent = 'Expired';
+      licenseBadge.className = 'license-badge expired';
+      licenseInfo.textContent = 'Click to activate';
+    } else {
+      licenseBadge.textContent = 'Trial';
+      licenseBadge.className = 'license-badge trial';
+      licenseInfo.textContent = `${licenseStatus.daysRemaining} days left`;
+    }
+  } catch (error) {
+    console.error('Error getting license status:', error);
+    licenseInfo.textContent = 'Error';
+  }
+}
+
+// Show license modal
+function showLicenseModal() {
+  licenseModal.style.display = 'flex';
+  licenseKeyInput.value = '';
+  licenseError.textContent = '';
+  licenseKeyInput.focus();
+}
+
+// Hide license modal
+function hideLicenseModal() {
+  licenseModal.style.display = 'none';
+  licenseKeyInput.value = '';
+  licenseError.textContent = '';
+}
+
+// Show trial expired modal
+function showTrialExpiredModal() {
+  trialExpiredModal.style.display = 'flex';
+}
+
+// Hide trial expired modal
+function hideTrialExpiredModal() {
+  trialExpiredModal.style.display = 'none';
+}
+
+// Format license key input (add dashes automatically)
+licenseKeyInput.addEventListener('input', (e) => {
+  let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+  // Add dashes after MDPDF and every 4 characters
+  if (value.length > 5) {
+    value = value.slice(0, 5) + '-' + value.slice(5);
+  }
+  if (value.length > 10) {
+    value = value.slice(0, 10) + '-' + value.slice(10);
+  }
+  if (value.length > 15) {
+    value = value.slice(0, 15) + '-' + value.slice(15);
+  }
+  if (value.length > 20) {
+    value = value.slice(0, 20) + '-' + value.slice(20);
+  }
+
+  e.target.value = value.slice(0, 25); // MDPDF-XXXX-XXXX-XXXX-XXXX = 25 chars
+});
+
+// Activate license
+activateLicenseBtn.addEventListener('click', async () => {
+  const key = licenseKeyInput.value.trim();
+
+  if (!key) {
+    licenseError.textContent = 'Please enter a license key';
+    return;
+  }
+
+  activateLicenseBtn.disabled = true;
+  activateLicenseBtn.textContent = 'Activating...';
+
+  try {
+    const result = await window.electron.activateLicense(key);
+
+    if (result.success) {
+      hideLicenseModal();
+      hideTrialExpiredModal();
+      await updateLicenseStatus();
+      await window.electron.showMessage({
+        type: 'info',
+        title: 'License Activated',
+        message: 'Thank you! Your license has been activated successfully. You now have unlimited conversions.'
+      });
+    } else {
+      licenseError.textContent = result.error || 'Invalid license key';
+    }
+  } catch (error) {
+    licenseError.textContent = 'Error activating license. Please try again.';
+    console.error('License activation error:', error);
+  } finally {
+    activateLicenseBtn.disabled = false;
+    activateLicenseBtn.textContent = 'Activate';
+  }
+});
+
+// Cancel license modal
+cancelLicenseBtn.addEventListener('click', hideLicenseModal);
+
+// Enter license key from trial expired modal
+enterLicenseKeyBtn.addEventListener('click', () => {
+  hideTrialExpiredModal();
+  showLicenseModal();
+});
+
+// Click on license status to show modal
+licenseStatusDiv.addEventListener('click', () => {
+  if (licenseStatus && !licenseStatus.licensed) {
+    showLicenseModal();
+  }
+});
+
+// Check if user can convert (and show appropriate modal if not)
+async function checkCanConvert() {
+  const result = await window.electron.canConvert();
+
+  if (!result.canConvert) {
+    showTrialExpiredModal();
+    return false;
+  }
+
+  return true;
+}
+
+// Initialize license status on load
+document.addEventListener('DOMContentLoaded', async () => {
+  await updateLicenseStatus();
+
+  // If trial is expired, show the modal on startup
+  if (licenseStatus && licenseStatus.trialExpired) {
+    showTrialExpiredModal();
+  }
+});
+
+// Call updateLicenseStatus immediately as well (for cases where DOMContentLoaded already fired)
+updateLicenseStatus();

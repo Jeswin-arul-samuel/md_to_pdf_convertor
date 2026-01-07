@@ -12,6 +12,10 @@
       <header>
         <h1>MD to PDF</h1>
         <p class="subtitle">Convert with live preview</p>
+        <div class="license-status" id="licenseStatus">
+          <span class="license-badge trial" id="licenseBadge">Trial</span>
+          <span class="license-info" id="licenseInfo">Loading...</span>
+        </div>
       </header>
 
       <div class="controls">
@@ -220,6 +224,60 @@
       </div>
       <div class="modal-footer">
         <button class="btn-cancel" id="cancelSaveMode">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- License Registration Modal -->
+  <div class="modal-overlay" id="licenseModal" style="display: none;">
+    <div class="modal license-modal">
+      <div class="modal-header">
+        <h3>Enter License Key</h3>
+      </div>
+      <div class="modal-body">
+        <p class="license-description">Enter your license key to unlock unlimited conversions.</p>
+        <div class="license-input-group">
+          <input type="text" id="licenseKeyInput" placeholder="MDPDF-XXXX-XXXX-XXXX-XXXX" maxlength="29" autocomplete="off" spellcheck="false">
+          <p class="license-error" id="licenseError"></p>
+        </div>
+        <div class="license-purchase">
+          <p>Don't have a license?</p>
+          <a href="https://jeswinarulsamuel.gumroad.com/l/ojiwme" target="_blank" class="btn-purchase">Purchase License ($12.99)</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="cancelLicense">Cancel</button>
+        <button class="btn-activate" id="activateLicense">Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trial Expired Modal -->
+  <div class="modal-overlay" id="trialExpiredModal" style="display: none;">
+    <div class="modal trial-expired-modal">
+      <div class="modal-header">
+        <h3>Trial Expired</h3>
+      </div>
+      <div class="modal-body">
+        <div class="trial-expired-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <p class="trial-expired-message">Your free trial has ended. Purchase a license to continue converting Markdown files to PDF.</p>
+        <div class="trial-features">
+          <h4>With a license you get:</h4>
+          <ul>
+            <li>Unlimited file conversions</li>
+            <li>Lifetime access - no subscription</li>
+            <li>Free updates</li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-enter-key" id="enterLicenseKey">I have a license key</button>
+        <a href="https://jeswinarulsamuel.gumroad.com/l/ojiwme" target="_blank" class="btn-purchase-now">Purchase License ($12.99)</a>
       </div>
     </div>
   </div>

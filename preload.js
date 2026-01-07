@@ -10,5 +10,14 @@ contextBridge.exposeInMainWorld('electron', {
   selectMarkdown: () => ipcRenderer.invoke('select-markdown'),
   selectOutputFolder: () => ipcRenderer.invoke('select-output-folder'),
   generatePreview: (data) => ipcRenderer.invoke('generate-preview', data),
-  showMessage: (data) => ipcRenderer.invoke('show-message', data)
+  showMessage: (data) => ipcRenderer.invoke('show-message', data),
+
+  // License management
+  getLicenseStatus: () => ipcRenderer.invoke('get-license-status'),
+  activateLicense: (licenseKey) => ipcRenderer.invoke('activate-license', { licenseKey }),
+  recordConversion: () => ipcRenderer.invoke('record-conversion'),
+  canConvert: () => ipcRenderer.invoke('can-convert'),
+  deactivateLicense: () => ipcRenderer.invoke('deactivate-license'),
+  resetTrial: () => ipcRenderer.invoke('reset-trial'),
+  generateLicenseKey: () => ipcRenderer.invoke('generate-license-key')
 });

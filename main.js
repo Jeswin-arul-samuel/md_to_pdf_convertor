@@ -3,8 +3,10 @@ const path = require('path');
 const fs = require('fs');
 const { marked } = require('marked');
 const puppeteer = require('puppeteer');
+const { LicenseManager, generateLicenseKey } = require('./license');
 
 let mainWindow;
+let licenseManager;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -25,6 +27,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  // Initialize license manager with user data path
+  licenseManager = new LicenseManager(app.getPath('userData'));
+
   createWindow();
 
   app.on('activate', () => {
@@ -390,4 +395,44 @@ ipcMain.handle('show-message', async (event, { type, title, message }) => {
     buttons: ['OK']
   });
   return { success: true };
+});
+
+// ==================== LICENSE HANDLERS ====================
+
+// Get current license status
+ipcMain.handle('get-license-status', async () => {
+  return licenseManager.getLicenseStatus();
+});
+
+// Activate license with key
+ipcMain.handle('activate-license', async (event, { licenseKey }) => {
+  return licenseManager.activateLicense(licenseKey);
+});
+
+// Record a file conversion (for trial tracking)
+ipcMain.handle('record-conversion', async () => {
+  return licenseManager.recordConversion();
+});
+
+// Check if user can convert
+ipcMain.handle('can-convert', async () => {
+  return {
+    canConvert: licenseManager.canConvert(),
+    status: licenseManager.getLicenseStatus()
+  };
+});
+
+// Deactivate license
+ipcMain.handle('deactivate-license', async () => {
+  return licenseManager.deactivateLicense();
+});
+
+// Reset trial (for development/testing only)
+ipcMain.handle('reset-trial', async () => {
+  return licenseManager.resetTrial();
+});
+
+// Generate license key (for development/testing only - remove in production or secure it)
+ipcMain.handle('generate-license-key', async () => {
+  return { key: generateLicenseKey() };
 });
