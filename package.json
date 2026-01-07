@@ -1,0 +1,91 @@
+{
+  "name": "md_to_pdf",
+  "version": "1.0.0",
+  "description": "Markdown to PDF Converter with Live Preview",
+  "main": "main.js",
+  "author": {
+    "name": "Jeswin",
+    "email": "jeswin.arul.samuel@gmail.com"
+  },
+  "homepage": "https://github.com/jeswin/md-to-pdf-converter",
+  "scripts": {
+    "start": "ELECTRON_DISABLE_SANDBOX=1 electron .",
+    "build": "electron-builder",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win",
+    "build:all": "electron-builder --linux --win",
+    "build:appimage": "electron-builder --linux AppImage"
+  },
+  "keywords": [
+    "markdown",
+    "pdf",
+    "converter",
+    "puppeteer"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "marked": "^17.0.1",
+    "puppeteer": "^24.31.0"
+  },
+  "devDependencies": {
+    "electron": "^39.2.3",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.mdtopdf.app",
+    "productName": "MD to PDF Converter",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "executableName": "md-to-pdf",
+      "synopsis": "Convert Markdown files to PDF with live preview"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MD to PDF Converter"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    },
+    "appImage": {
+    },
+    "deb": {
+      "maintainer": "Jeswin <jeswin.arul.samuel@gmail.com>",
+      "depends": [
+        "gconf2",
+        "gconf-service",
+        "libnotify4",
+        "libappindicator1",
+        "libxtst6",
+        "libnss3"
+      ]
+    }
+  }
+}

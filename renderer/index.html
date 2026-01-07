@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown to PDF Converter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <header>
+        <h1>MD to PDF</h1>
+        <p class="subtitle">Convert with live preview</p>
+      </header>
+
+      <div class="controls">
+        <div class="add-files-section">
+          <button class="btn-add-files" id="addFilesBtn">
+            <svg class="add-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Add Files
+          </button>
+          <p class="add-hint">Drag & drop files anywhere or click to browse</p>
+          <input type="file" id="fileInput" accept=".md,.markdown" multiple style="display: none;">
+        </div>
+
+        <div class="file-list" id="fileList" style="display: none;">
+          <div class="file-list-header">
+            <span id="fileCount">0 files</span>
+            <button class="btn-clear" id="clearAllBtn">Clear All</button>
+          </div>
+          <div class="files" id="files"></div>
+        </div>
+
+        <div class="css-section">
+          <label class="checkbox-label">
+            <input type="checkbox" id="customCssCheck">
+            <span>Custom CSS File</span>
+          </label>
+          <div class="css-input" id="cssInput" style="display: none;">
+            <input type="text" id="cssPath" placeholder="No CSS file" readonly>
+            <button class="btn-browse-css" id="browseCssBtn">Browse</button>
+          </div>
+        </div>
+
+        <div class="style-options">
+          <!-- Typography Section -->
+          <div class="style-section" id="typographySection">
+            <div class="section-header" data-section="typography">
+              <span>Typography</span>
+              <span class="toggle-icon">&#9660;</span>
+            </div>
+            <div class="section-content open">
+              <div class="style-row">
+                <label for="fontFamily">Font Family</label>
+                <select id="fontFamily">
+                  <option value="serif">Serif</option>
+                  <option value="sans-serif">Sans-serif</option>
+                  <option value="monospace">Monospace</option>
+                </select>
+              </div>
+              <div class="style-row">
+                <label for="fontSize">Font Size</label>
+                <select id="fontSize">
+                  <option value="10pt">Small (10pt)</option>
+                  <option value="12pt" selected>Medium (12pt)</option>
+                  <option value="14pt">Large (14pt)</option>
+                  <option value="16pt">Extra Large (16pt)</option>
+                </select>
+              </div>
+              <div class="style-row">
+                <label for="lineHeight">Line Height</label>
+                <select id="lineHeight">
+                  <option value="1.4">Compact (1.4)</option>
+                  <option value="1.6" selected>Normal (1.6)</option>
+                  <option value="1.8">Relaxed (1.8)</option>
+                  <option value="2.0">Double (2.0)</option>
+                </select>
+              </div>
+              <div class="style-row">
+                <label for="headingFont">Heading Font</label>
+                <select id="headingFont">
+                  <option value="sans-serif" selected>Sans-serif</option>
+                  <option value="serif">Serif</option>
+                  <option value="same">Same as body</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Layout Section -->
+          <div class="style-section" id="layoutSection">
+            <div class="section-header" data-section="layout">
+              <span>Layout</span>
+              <span class="toggle-icon">&#9660;</span>
+            </div>
+            <div class="section-content">
+              <div class="style-row">
+                <label for="pageMargins">Page Margins</label>
+                <select id="pageMargins">
+                  <option value="0.5in">Narrow (0.5in)</option>
+                  <option value="1in" selected>Normal (1in)</option>
+                  <option value="1.5in">Wide (1.5in)</option>
+                </select>
+              </div>
+              <div class="style-row">
+                <label for="contentWidth">Content Width</label>
+                <select id="contentWidth">
+                  <option value="600px">Narrow (600px)</option>
+                  <option value="800px" selected>Medium (800px)</option>
+                  <option value="1000px">Wide (1000px)</option>
+                  <option value="100%">Full Width</option>
+                </select>
+              </div>
+              <div class="style-row">
+                <label for="paragraphSpacing">Paragraph Spacing</label>
+                <select id="paragraphSpacing">
+                  <option value="8px">Compact (8px)</option>
+                  <option value="16px" selected>Normal (16px)</option>
+                  <option value="24px">Relaxed (24px)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colors Section -->
+          <div class="style-section" id="colorsSection">
+            <div class="section-header" data-section="colors">
+              <span>Colors</span>
+              <span class="toggle-icon">&#9660;</span>
+            </div>
+            <div class="section-content">
+              <div class="style-row">
+                <label for="textColor">Text Color</label>
+                <input type="color" id="textColor" value="#333333">
+              </div>
+              <div class="style-row">
+                <label for="backgroundColor">Background</label>
+                <input type="color" id="backgroundColor" value="#ffffff">
+              </div>
+              <div class="style-row">
+                <label for="headingColor">Headings</label>
+                <input type="color" id="headingColor" value="#1a1a1a">
+              </div>
+              <div class="style-row">
+                <label for="linkColor">Links</label>
+                <input type="color" id="linkColor" value="#0066cc">
+              </div>
+              <div class="style-row">
+                <label for="codeBackground">Code Background</label>
+                <input type="color" id="codeBackground" value="#f5f5f5">
+              </div>
+              <div class="style-row">
+                <label for="codeTextColor">Code Text</label>
+                <input type="color" id="codeTextColor" value="#c7254e">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-convert" id="convertBtn" disabled>
+            Convert All to PDF
+          </button>
+        </div>
+
+        <div id="status" class="status"></div>
+      </div>
+
+      <footer>
+        <p>Powered by Marked & Puppeteer</p>
+      </footer>
+    </div>
+
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-header">
+        <h3 id="previewTitle">Preview</h3>
+      </div>
+      <div class="preview-content">
+        <iframe id="previewFrame" sandbox="allow-same-origin"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Mode Modal -->
+  <div class="modal-overlay" id="saveModeModal" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Save Options</h3>
+      </div>
+      <div class="modal-body">
+        <p>You have multiple files to convert. How would you like to save them?</p>
+        <div class="modal-options">
+          <button class="modal-option" id="saveOneByOne">
+            <div class="option-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            <div class="option-text">
+              <strong>Save One by One</strong>
+              <span>Choose location for each file individually</span>
+            </div>
+          </button>
+          <button class="modal-option" id="saveAllTogether">
+            <div class="option-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div class="option-text">
+              <strong>Save All to Folder</strong>
+              <span>Choose a folder and save all files there</span>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" id="cancelSaveMode">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
