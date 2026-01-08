@@ -39,10 +39,13 @@
     "files": [
       "main.js",
       "preload.js",
+      "license.js",
+      "system-check.js",
       "renderer/**/*",
       "assets/**/*",
       "node_modules/**/*"
     ],
+    "icon": "assets/icon.png",
     "linux": {
       "target": [
         "AppImage",
@@ -50,7 +53,8 @@
       ],
       "category": "Office",
       "executableName": "md-to-pdf",
-      "synopsis": "Convert Markdown files to PDF with live preview"
+      "synopsis": "Convert Markdown files to PDF with live preview",
+      "icon": "assets/icon.png"
     },
     "win": {
       "target": [
@@ -62,14 +66,18 @@
           "target": "portable",
           "arch": ["x64"]
         }
-      ]
+      ],
+      "icon": "assets/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "MD to PDF Converter"
+      "shortcutName": "MD to PDF Converter",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico"
     },
     "portable": {
       "artifactName": "${productName}-Portable-${version}.${ext}"
@@ -78,13 +86,17 @@
     },
     "deb": {
       "maintainer": "Jeswin <jeswin.arul.samuel@gmail.com>",
+      "icon": "assets/icon.png",
       "depends": [
-        "gconf2",
-        "gconf-service",
         "libnotify4",
-        "libappindicator1",
         "libxtst6",
-        "libnss3"
+        "libnss3",
+        "libglib2.0-0",
+        "libx11-6",
+        "libxkbfile1",
+        "libfreetype6",
+        "fonts-dejavu",
+        "fonts-liberation"
       ]
     }
   }

@@ -104,67 +104,200 @@ After the trial, purchase a lifetime license to continue using the app:
 
 ### Windows
 
+#### System Requirements
+- **OS**: Windows 10 or later (64-bit)
+- **Disk Space**: ~200MB for installation
+- **RAM**: 4GB minimum (8GB recommended)
+- **Display**: 1366x768 or higher resolution
+
 #### Option 1: Setup Installer (Recommended)
+
+This option provides the most integrated Windows experience with Start Menu shortcuts and desktop icons.
+
+**Installation Steps:**
+
 1. Download `MD to PDF Converter Setup 2.0.0.exe`
-2. Double-click to run the installer
-3. Follow the installation wizard
-4. Choose installation directory (optional)
-5. Click "Install"
-6. Launch from Start Menu or Desktop shortcut
+
+2. Run the installer:
+   - Double-click the `.exe` file
+   - You may see a **"Windows protected your PC"** warning - this is normal
+   - Click **"More info"** then **"Run anyway"** to proceed
+   - This warning appears because we don't have a paid code-signing certificate (common for indie apps)
+
+3. Follow the installer wizard:
+   - Read the welcome screen
+   - Choose installation location (default is fine for most users)
+   - Select optional shortcuts:
+     - ☑ Create Desktop shortcut
+     - ☑ Create Start Menu shortcut
+   - Click **"Install"**
+
+4. Launch the application:
+   - From the **Start Menu**: Search for "MD to PDF Converter"
+   - From **Desktop shortcut** (if created)
+   - Or look in: `C:\Program Files\md_to_pdf\` (or your chosen location)
 
 #### Option 2: Portable Version
+
+Use this option if you prefer a standalone executable with no system installation.
+
+**Installation Steps:**
+
 1. Download `MD to PDF Converter-Portable-2.0.0.exe`
-2. Move it to your preferred location
-3. Double-click to run - no installation needed!
+
+2. Place it anywhere convenient:
+   - Desktop
+   - Documents folder
+   - USB drive
+   - Any folder on your computer
+
+3. Run it:
+   - Double-click the `.exe` file
+   - First run may show the Windows Defender SmartScreen warning (same as Option 1)
+   - Click **"More info"** → **"Run anyway"**
+   - Application launches immediately
+
+**Advantages of Portable:**
+- No installation required
+- Can run from USB drive
+- Easy to move between computers
+- No files left in system directories
 
 #### Uninstall (Windows)
-- Go to **Settings** → **Apps** → **Apps & features**
-- Find "MD to PDF Converter"
-- Click **Uninstall**
+
+**For Setup Installer:**
+1. Go to **Settings** → **Apps** → **Apps & features**
+2. Search for "MD to PDF Converter"
+3. Click on it
+4. Click **"Uninstall"**
+5. Confirm the uninstallation
+6. Application and shortcuts are completely removed
+
+**For Portable Version:**
+1. Simply delete the `.exe` file
+2. No system files to remove
+3. Optional: Delete any saved PDFs in your Documents folder
+
+#### Windows Defender SmartScreen Warning
+
+**What is it?**
+Windows Defender SmartScreen is a security feature that warns about unfamiliar applications. You'll see this message:
+> "Windows protected your PC. Windows Defender SmartScreen prevented an unrecognized app from running."
+
+**Why does it appear?**
+- The app is new/not widely installed yet
+- We don't have a paid code-signing certificate
+- This is completely normal for indie/open-source applications
+
+**How to proceed:**
+1. Click **"More info"**
+2. Click **"Run anyway"**
+3. The app will launch normally
+4. Windows will remember this and may not warn you again
 
 ---
 
 ### Linux
 
-#### Option 1: Debian/Ubuntu (.deb)
-```bash
-# Install the package
-sudo dpkg -i md_to_pdf_2.0.0_amd64.deb
+#### Option 1: Debian/Ubuntu (.deb) - RECOMMENDED
 
-# If there are dependency issues, run:
+This is the traditional Linux installation method. The package will integrate with your system and appear in your applications menu.
+
+**Installation Steps:**
+
+1. Download `md_to_pdf_2.0.0_amd64.deb`
+
+2. Install the package:
+```bash
+sudo dpkg -i md_to_pdf_2.0.0_amd64.deb
+```
+
+3. **Important:** If you see dependency errors, run this to automatically install missing dependencies:
+```bash
 sudo apt-get install -f
 ```
 
-**Launch:** Search for "MD to PDF Converter" in your application menu, or run:
+This command will:
+- Detect missing system libraries
+- Download and install them automatically
+- Complete the installation
+
+4. **Launch the application:**
+   - Search for "MD to PDF Converter" in your application menu, OR
+   - Run from terminal:
 ```bash
 md-to-pdf
 ```
 
-**Uninstall:**
+**Troubleshooting .deb installation:**
+
+If `sudo apt-get install -f` doesn't work, you can manually install the dependencies:
+```bash
+sudo apt-get install libnotify4 libxtst6 libnss3 libglib2.0-0 libx11-6 libxkbfile1 libfreetype6
+```
+
+**Uninstall the .deb:**
 ```bash
 sudo dpkg -r md_to_pdf
 ```
 
-#### Option 2: AppImage (Any Linux Distribution)
-```bash
-# Make it executable
-chmod +x "MD to PDF Converter-2.0.0.AppImage"
+---
 
-# Run it
-./"MD to PDF Converter-2.0.0.AppImage"
+#### Option 2: AppImage (Portable - Any Linux Distribution)
+
+If you prefer a portable installation or have issues with the .deb, use the AppImage. It's self-contained and works on any Linux distribution.
+
+**Installation Steps:**
+
+1. Download `MD to PDF Converter-2.0.0.AppImage`
+
+2. Download the wrapper script `md-to-pdf-wrapper.sh` (from the same release)
+
+3. Place both files in the same folder
+
+4. Make the wrapper script executable:
+```bash
+chmod +x md-to-pdf-wrapper.sh
 ```
 
-**Note:** If you get a FUSE error, install libfuse2:
+5. **Run the application:**
+```bash
+./md-to-pdf-wrapper.sh
+```
+
+The wrapper script automatically handles sandbox configuration that's required on most Linux systems.
+
+**Alternative: Direct AppImage Execution (without wrapper)**
+
+If you don't have the wrapper script:
+```bash
+chmod +x "MD to PDF Converter-2.0.0.AppImage"
+ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.0.AppImage"
+```
+
+**Optional: Move to permanent location:**
+
+If you want to run it from anywhere:
+```bash
+mkdir -p ~/.local/bin
+mv "MD to PDF Converter-2.0.0.AppImage" ~/.local/bin/md-to-pdf
+mv md-to-pdf-wrapper.sh ~/.local/bin/
+chmod +x ~/.local/bin/md-to-pdf-wrapper.sh
+
+# Then run it from anywhere:
+~/.local/bin/md-to-pdf-wrapper.sh
+```
+
+**Troubleshooting AppImage:**
+
+If you get a FUSE error:
 ```bash
 sudo apt-get install libfuse2
 ```
 
-**Optional:** Move to a permanent location:
-```bash
-mkdir -p ~/.local/bin
-mv "MD to PDF Converter-2.0.0.AppImage" ~/.local/bin/md-to-pdf
-chmod +x ~/.local/bin/md-to-pdf
-```
+**Uninstall AppImage:**
+
+Simply delete the AppImage file(s). No system integration to remove.
 
 ---
 
@@ -334,34 +467,145 @@ For complete control over styling:
 
 ### Windows
 
-**"Windows protected your PC" warning:**
-- Click "More info"
-- Click "Run anyway"
-- This appears because the app isn't code-signed with a paid certificate
+**"Windows protected your PC" or SmartScreen warning:**
 
-**App won't start:**
-- Make sure you have Windows 10 or later
-- Try running as Administrator
+This is a common security check and completely safe to bypass for our app.
+
+Steps to proceed:
+1. Click **"More info"** button
+2. Click **"Run anyway"** button
+3. The application will launch normally
+4. Windows may remember this app and not warn again on future runs
+
+Why it appears:
+- The app is new and not yet widely installed (Windows tracks this)
+- We don't have a paid code-signing certificate (costs $300+/year, common for indie apps)
+- It's a normal security check, not an actual danger
+
+**App won't start or crashes immediately:**
+
+1. Check Windows version:
+   - Right-click Windows menu → System
+   - Verify you have **Windows 10 or later**
+   - If older, you need to upgrade Windows
+
+2. Try running as Administrator:
+   - Right-click the `.exe` file
+   - Select "Run as administrator"
+   - Click "Yes" when prompted
+
+3. Check available disk space:
+   - Right-click C: drive → Properties
+   - Ensure you have **at least 200MB free space**
+   - If low on space, delete some files and try again
+
+4. Verify system requirements:
+   - Windows 10 or later
+   - 4GB RAM minimum (8GB recommended)
+   - Intel/AMD 64-bit processor
+
+**"Permission denied" or "Access denied" errors:**
+
+1. Right-click the `.exe` file
+2. Select "Run as administrator"
+3. Click "Yes" on the UAC prompt
+4. This grants the necessary permissions for PDF generation
+
+**PDF files won't save or convert fails:**
+
+1. Ensure the output folder has write permissions:
+   - Right-click the folder → Properties
+   - Go to "Security" tab
+   - Verify your user account has "Modify" permissions
+
+2. Try saving to a different location:
+   - Documents folder (safest)
+   - Desktop
+   - Any folder you created yourself
+
+3. Check disk space:
+   - PDF files can be large
+   - Ensure enough free space on your drive
+
+**Application seems slow or unresponsive:**
+
+This is normal when:
+- Converting large files (can take 5-10 seconds)
+- First launch (browser engine initializing)
+- Complex styled documents (with many images/tables)
+
+Wait a moment and it should respond. If it freezes for more than 30 seconds:
+1. Close the window
+2. Restart the application
+3. Try with a simpler markdown file
+
+**Need to uninstall completely:**
+
+If the regular uninstall doesn't work:
+1. Download and run CCleaner (free tool)
+2. Go to Tools → Uninstall
+3. Find "MD to PDF Converter"
+4. Click Uninstall
+5. Let CCleaner clean registry
+6. Restart computer
 
 ### Linux
 
-**AppImage won't run:**
+**AppImage won't run - FUSE error:**
 ```bash
-# Install FUSE
+# Install FUSE library
 sudo apt-get install libfuse2
-
-# Make sure it's executable
-chmod +x "MD to PDF Converter-2.0.0.AppImage"
 ```
 
-**PDF generation fails:**
+**AppImage won't run - Sandbox error:**
+
+If you see: `The SUID sandbox helper binary was found, but is not configured correctly...`
+
+This is expected and normal. The solution is simple:
+
+1. **Use the wrapper script** (Recommended):
 ```bash
-# Install Chrome/Chromium dependencies
-sudo apt-get install -y libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcb-dri3-0 libdrm2 libgbm1 libasound2
+./md-to-pdf-wrapper.sh
 ```
 
-**Sandbox errors:**
-The app runs with sandbox disabled by default. If you encounter issues, this is expected behavior for Electron apps with Puppeteer.
+2. **Or run with sandbox disabled**:
+```bash
+ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.0.AppImage"
+```
+
+The wrapper script automatically handles this for you, so you don't need to manually set the environment variable each time.
+
+**PDF generation fails - Missing system libraries:**
+
+If the app launches but PDF generation fails, some system libraries may be missing:
+
+```bash
+# Install all required dependencies
+sudo apt-get install -y libnotify4 libxtst6 libnss3 libglib2.0-0 libx11-6 libxkbfile1 libfreetype6 fonts-dejavu fonts-liberation
+```
+
+**.deb installation shows dependency errors:**
+
+This is normal and expected. After running `sudo dpkg -i`, always run:
+```bash
+sudo apt-get install -f
+```
+
+This automatically detects and installs any missing dependencies.
+
+**App crashes or won't start:**
+
+1. First, install system dependencies:
+```bash
+sudo apt-get install -f
+```
+
+2. If using AppImage, ensure you're using the wrapper script:
+```bash
+./md-to-pdf-wrapper.sh
+```
+
+3. Check that your system has at least 100MB free disk space in `/tmp`
 
 ---
 

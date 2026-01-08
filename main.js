@@ -4,6 +4,7 @@ const fs = require('fs');
 const { marked } = require('marked');
 const puppeteer = require('puppeteer');
 const { LicenseManager, generateLicenseKey } = require('./license');
+const SystemCheck = require('./system-check');
 
 let mainWindow;
 let licenseManager;
@@ -26,7 +27,15 @@ function createWindow() {
   // mainWindow.webContents.openDevTools();
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Run system compatibility checks
+  const systemCheck = new SystemCheck();
+  const checksPass = await systemCheck.run();
+
+  if (!checksPass) {
+    console.error('System compatibility checks failed. The application may not work correctly.');
+  }
+
   // Initialize license manager with user data path
   licenseManager = new LicenseManager(app.getPath('userData'));
 
@@ -557,11 +566,31 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
     return { success: true, message: 'PDF created successfully!' };
   } catch (error) {
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        // Ignore close errors
+      }
     }
+
+    // Provide detailed error messages
+    let errorMessage = 'Failed to convert markdown to PDF';
+
+    if (error.message.includes('No such file')) {
+      errorMessage = 'Markdown file not found';
+    } else if (error.message.includes('EACCES') || error.message.includes('permission')) {
+      errorMessage = 'Permission denied. Check file permissions.';
+    } else if (error.message.includes('ENOSPC')) {
+      errorMessage = 'Not enough disk space to create PDF';
+    } else if (error.message.includes('Chromium') || error.message.includes('browser')) {
+      errorMessage = 'Browser engine failed to start. Some system libraries may be missing. Try installing: libnotify4 libxtst6 libnss3';
+    } else {
+      errorMessage = error.message || errorMessage;
+    }
+
     return {
       success: false,
-      error: error.message || 'Failed to convert markdown to PDF'
+      error: errorMessage
     };
   }
 }
@@ -750,11 +779,29 @@ ipcMain.handle('convert-text-to-pdf', async (event, { markdownText, pdfPath, css
     return { success: true, message: 'PDF generated successfully' };
   } catch (error) {
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (closeError) {
+        // Ignore close errors
+      }
     }
+
+    // Provide detailed error messages
+    let errorMessage = 'Failed to convert to PDF';
+
+    if (error.message.includes('EACCES') || error.message.includes('permission')) {
+      errorMessage = 'Permission denied. Check write permissions for output directory.';
+    } else if (error.message.includes('ENOSPC')) {
+      errorMessage = 'Not enough disk space to create PDF';
+    } else if (error.message.includes('Chromium') || error.message.includes('browser')) {
+      errorMessage = 'Browser engine failed to start. Some system libraries may be missing. Try installing: libnotify4 libxtst6 libnss3';
+    } else {
+      errorMessage = error.message || errorMessage;
+    }
+
     return {
       success: false,
-      error: error.message || 'Failed to convert to PDF'
+      error: errorMessage
     };
   }
 });
