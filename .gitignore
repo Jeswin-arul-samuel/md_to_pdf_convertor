@@ -43,3 +43,7 @@ builder-effective-config.yaml
 
 # License key generator (keep private)
 generate-keys.js
+
+# Marketing files (internal use only)
+GUMROAD_MARKETING.md
+LINKEDIN_POST_V2.md
