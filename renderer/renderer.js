@@ -12,6 +12,7 @@ let styleOptions = {
   headingFont: 'sans-serif',
   // Layout
   pageMargins: '1in',
+  pageMarginCustom: '1in',
   contentWidth: '800px',
   paragraphSpacing: '16px',
   // Colors
@@ -20,8 +21,52 @@ let styleOptions = {
   headingColor: '#1a1a1a',
   linkColor: '#0066cc',
   codeBackground: '#f5f5f5',
-  codeTextColor: '#c7254e'
+  codeTextColor: '#c7254e',
+  // Tables
+  tableBorders: true,
+  tableAlternateRows: true,
+  tableBorderWidth: '1px',
+  tableCellPadding: '8px',
+  tableHeaderBackground: '#f5f5f5',
+  tableHeaderText: '#333333',
+  // Images
+  imageMaxWidth: '100%',
+  imageAlignment: 'center',
+  imageSpacing: '16px',
+  // Lists
+  listBulletStyle: 'disc',
+  listNumberStyle: 'decimal',
+  listIndentation: '2em',
+  listItemSpacing: '0.5em',
+  // Code
+  codeBorderRadius: '6px',
+  codePadding: '16px',
+  codeLineHeight: '1.5',
+  // Links
+  linkUnderline: true,
+  // Headings
+  headingMarginTop: '1.5em',
+  headingMarginBottom: '0.5em',
+  // Blockquote
+  blockquoteBorderColor: '#0066cc',
+  blockquoteBackground: '#f0f0f0',
+  // Text & Spacing
+  textAlignment: 'left',
+  letterSpacing: '0px',
+  wordSpacing: '0px',
+  // PDF Headers/Footers
+  pdfHeaderText: '',
+  pdfFooterText: '',
+  pdfPageNumbers: true,
+  pdfPageNumberPosition: 'footer-right'
 };
+
+// Mode state for Files vs Editor
+let currentMode = 'files';
+let editorContent = '';
+let editorPreviewTimeout = null;
+let unsavedChanges = false;
+let currentFilePath = null; // Track which file is currently being edited
 
 const addFilesSection = document.querySelector('.add-files-section');
 const fileInput = document.getElementById('fileInput');
@@ -36,10 +81,17 @@ const customCssCheck = document.getElementById('customCssCheck');
 const cssInput = document.getElementById('cssInput');
 const cssPath = document.getElementById('cssPath');
 const browseCssBtn = document.getElementById('browseCssBtn');
-const previewPanel = document.getElementById('previewPanel');
 const previewFrame = document.getElementById('previewFrame');
-const previewTitle = document.getElementById('previewTitle');
 const sidebar = document.querySelector('.sidebar');
+
+// Editor and panel elements
+const editorPanel = document.getElementById('editorPanel');
+const previewPanel = document.getElementById('previewPanel');
+const editorTextarea = document.getElementById('editorTextarea');
+const expandEditorBtn = document.getElementById('expandEditorBtn');
+const expandPreviewBtn = document.getElementById('expandPreviewBtn');
+const saveEditorBtn = document.getElementById('saveEditorBtn');
+const unsavedIndicator = document.getElementById('unsavedIndicator');
 
 // Style option controls
 const fontFamily = document.getElementById('fontFamily');
@@ -55,6 +107,73 @@ const headingColor = document.getElementById('headingColor');
 const linkColor = document.getElementById('linkColor');
 const codeBackground = document.getElementById('codeBackground');
 const codeTextColor = document.getElementById('codeTextColor');
+
+// New style controls - Margins
+const pageMarginCustom = document.getElementById('pageMarginCustom');
+
+// Table styling controls
+const tableBorders = document.getElementById('tableBorders');
+const tableAlternateRows = document.getElementById('tableAlternateRows');
+const tableBorderWidth = document.getElementById('tableBorderWidth');
+const tableCellPadding = document.getElementById('tableCellPadding');
+const tableHeaderBackground = document.getElementById('tableHeaderBackground');
+const tableHeaderText = document.getElementById('tableHeaderText');
+
+// Image styling controls
+const imageMaxWidth = document.getElementById('imageMaxWidth');
+const imageAlignment = document.getElementById('imageAlignment');
+const imageSpacing = document.getElementById('imageSpacing');
+
+// List styling controls
+const listBulletStyle = document.getElementById('listBulletStyle');
+const listNumberStyle = document.getElementById('listNumberStyle');
+const listIndentation = document.getElementById('listIndentation');
+const listItemSpacing = document.getElementById('listItemSpacing');
+
+// Code styling controls
+const codeBorderRadius = document.getElementById('codeBorderRadius');
+const codePadding = document.getElementById('codePadding');
+const codeLineHeight = document.getElementById('codeLineHeight');
+
+// Link styling controls
+const linkUnderline = document.getElementById('linkUnderline');
+
+// Heading spacing controls
+const headingMarginTop = document.getElementById('headingMarginTop');
+const headingMarginBottom = document.getElementById('headingMarginBottom');
+
+// Blockquote styling controls
+const blockquoteBorderColor = document.getElementById('blockquoteBorderColor');
+const blockquoteBackground = document.getElementById('blockquoteBackground');
+
+// Text & Spacing controls
+const textAlignment = document.getElementById('textAlignment');
+const letterSpacing = document.getElementById('letterSpacing');
+const wordSpacing = document.getElementById('wordSpacing');
+
+// PDF Headers/Footers controls
+const pdfHeaderText = document.getElementById('pdfHeaderText');
+const pdfFooterText = document.getElementById('pdfFooterText');
+const pdfPageNumbers = document.getElementById('pdfPageNumbers');
+const pdfPageNumberPosition = document.getElementById('pdfPageNumberPosition');
+
+// Tab switching functionality
+const tabButtons = document.querySelectorAll('.tab-button');
+const tabContents = document.querySelectorAll('.tab-content');
+
+tabButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const tabId = button.getAttribute('data-tab');
+
+    // Remove active class from all buttons and contents
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    // Add active class to clicked button and corresponding content
+    button.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  });
+});
 
 // Global drag and drop handlers (works anywhere in the sidebar)
 sidebar.addEventListener('dragover', (e) => {
@@ -95,6 +214,141 @@ sidebar.addEventListener('drop', (e) => {
   }
 });
 
+// Expand/Collapse functionality
+let editorExpanded = false;
+let previewExpanded = false;
+
+expandEditorBtn.addEventListener('click', () => {
+  editorExpanded = !editorExpanded;
+  previewPanel.classList.toggle('collapsed', editorExpanded);
+  editorPanel.classList.toggle('expanded', editorExpanded);
+
+  // Toggle icons
+  const expandIcon = expandEditorBtn.querySelector('.icon-expand');
+  const shrinkIcon = expandEditorBtn.querySelector('.icon-shrink');
+  if (editorExpanded) {
+    expandIcon.style.display = 'none';
+    shrinkIcon.style.display = 'block';
+    expandEditorBtn.title = 'Collapse editor';
+  } else {
+    expandIcon.style.display = 'block';
+    shrinkIcon.style.display = 'none';
+    expandEditorBtn.title = 'Expand editor';
+  }
+});
+
+expandPreviewBtn.addEventListener('click', () => {
+  previewExpanded = !previewExpanded;
+  editorPanel.classList.toggle('collapsed', previewExpanded);
+  previewPanel.classList.toggle('expanded', previewExpanded);
+
+  // Toggle icons
+  const expandIcon = expandPreviewBtn.querySelector('.icon-expand');
+  const shrinkIcon = expandPreviewBtn.querySelector('.icon-shrink');
+  if (previewExpanded) {
+    expandIcon.style.display = 'none';
+    shrinkIcon.style.display = 'block';
+    expandPreviewBtn.title = 'Collapse preview';
+  } else {
+    expandIcon.style.display = 'block';
+    shrinkIcon.style.display = 'none';
+    expandPreviewBtn.title = 'Expand preview';
+  }
+});
+
+// Mark as unsaved when editor content changes
+function markAsUnsaved() {
+  if (currentFilePath && !unsavedChanges) {
+    unsavedChanges = true;
+    unsavedIndicator.textContent = ' •';
+    saveEditorBtn.style.display = 'flex';
+  }
+}
+
+// Mark as saved and hide indicator
+function markAsSaved() {
+  unsavedChanges = false;
+  unsavedIndicator.textContent = '';
+  saveEditorBtn.style.display = 'none';
+}
+
+// Save editor content to file
+saveEditorBtn.addEventListener('click', async () => {
+  if (!currentFilePath) {
+    showStatus('No file to save', 'error');
+    return;
+  }
+
+  try {
+    showStatus('Saving...', '');
+    const result = await window.electron.writeFile(currentFilePath, editorContent);
+
+    if (result.success) {
+      markAsSaved();
+      showStatus('File saved successfully', 'success');
+    } else {
+      showStatus('Error saving file: ' + result.error, 'error');
+    }
+  } catch (error) {
+    showStatus('Error saving file: ' + error.message, 'error');
+  }
+});
+
+// Editor input with debounced preview updates
+editorTextarea.addEventListener('input', (e) => {
+  editorContent = e.target.value;
+  markAsUnsaved();
+
+  // Clear existing timeout
+  if (editorPreviewTimeout) {
+    clearTimeout(editorPreviewTimeout);
+  }
+
+  // Debounce preview update by 350ms
+  editorPreviewTimeout = setTimeout(() => {
+    generateEditorPreview();
+  }, 350);
+});
+
+// Generate preview from editor text
+async function generateEditorPreview() {
+  if (!editorContent.trim()) {
+    previewFrame.srcdoc = '<div style="padding: 20px; color: #999; font-size: 14px;">Start typing Markdown to see preview...</div>';
+    return;
+  }
+
+  try {
+    showStatus('Generating preview...', '');
+
+    // Save current scroll position before updating preview
+    const scrollPosition = previewFrame.contentWindow?.scrollY || 0;
+
+    // Call the new IPC handler for text-based preview generation
+    const result = await window.electron.generatePreviewFromText({
+      markdownText: editorContent,
+      cssPath: customCssPath,
+      styleOptions: styleOptions
+    });
+
+    if (result.success) {
+      previewFrame.srcdoc = result.html;
+
+      // Restore scroll position after content loads
+      setTimeout(() => {
+        if (previewFrame.contentWindow) {
+          previewFrame.contentWindow.scrollTo(0, scrollPosition);
+        }
+      }, 50);
+
+      showStatus('', '');
+    } else {
+      showStatus('Error generating preview: ' + (result.error || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    showStatus('Error generating preview: ' + error.message, 'error');
+  }
+}
+
 // Add files button
 addFilesBtn.addEventListener('click', async () => {
   const result = await window.electron.selectMarkdown();
@@ -128,13 +382,32 @@ function addFile(filePath, name) {
 
   updateFileList();
 
-  // Show preview for currently selected file
+  // Show preview and load content into editor for currently selected file
   if (selectedFileIndex !== null) {
     const file = selectedFiles[selectedFileIndex];
     generatePreview(file.path, file.name);
+    // Load file content into editor
+    loadFileContentToEditor(file.path);
   }
 
   showStatus('', '');
+}
+
+// Load file content into editor
+async function loadFileContentToEditor(filePath) {
+  try {
+    const result = await window.electron.readFile(filePath);
+    if (result.success) {
+      currentFilePath = filePath;
+      editorContent = result.content;
+      editorTextarea.value = result.content;
+      markAsSaved(); // Reset unsaved indicator when loading a new file
+      // Generate preview from the loaded content
+      generateEditorPreview();
+    }
+  } catch (error) {
+    // Silently fail if unable to load file
+  }
 }
 
 // Update file list UI
@@ -143,7 +416,6 @@ function updateFileList() {
     fileList.style.display = 'none';
     convertBtn.disabled = true;
     selectedFileIndex = null;
-    previewTitle.textContent = 'Preview';
     previewFrame.srcdoc = '';
     return;
   }
@@ -172,11 +444,13 @@ function updateFileList() {
       <button class="btn-remove-file" data-index="${index}">Remove</button>
     `;
 
-    // Click on file to preview
+    // Click on file to preview and load into editor
     fileItem.querySelector('.file-item-info').addEventListener('click', () => {
       selectedFileIndex = index;
       updateFileList();
       generatePreview(file.path, file.name);
+      // Load file content into editor
+      loadFileContentToEditor(file.path);
     });
 
     // Remove file button
@@ -265,6 +539,7 @@ function onStyleChange() {
   styleOptions.lineHeight = lineHeight.value;
   styleOptions.headingFont = headingFont.value;
   styleOptions.pageMargins = pageMargins.value;
+  styleOptions.pageMarginCustom = pageMarginCustom.value;
   styleOptions.contentWidth = contentWidth.value;
   styleOptions.paragraphSpacing = paragraphSpacing.value;
   styleOptions.textColor = textColor.value;
@@ -273,8 +548,50 @@ function onStyleChange() {
   styleOptions.linkColor = linkColor.value;
   styleOptions.codeBackground = codeBackground.value;
   styleOptions.codeTextColor = codeTextColor.value;
+  // Tables
+  styleOptions.tableBorders = tableBorders.checked;
+  styleOptions.tableAlternateRows = tableAlternateRows.checked;
+  styleOptions.tableBorderWidth = tableBorderWidth.value;
+  styleOptions.tableCellPadding = tableCellPadding.value;
+  styleOptions.tableHeaderBackground = tableHeaderBackground.value;
+  styleOptions.tableHeaderText = tableHeaderText.value;
+  // Images
+  styleOptions.imageMaxWidth = imageMaxWidth.value;
+  styleOptions.imageAlignment = imageAlignment.value;
+  styleOptions.imageSpacing = imageSpacing.value;
+  // Lists
+  styleOptions.listBulletStyle = listBulletStyle.value;
+  styleOptions.listNumberStyle = listNumberStyle.value;
+  styleOptions.listIndentation = listIndentation.value;
+  styleOptions.listItemSpacing = listItemSpacing.value;
+  // Code
+  styleOptions.codeBorderRadius = codeBorderRadius.value;
+  styleOptions.codePadding = codePadding.value;
+  styleOptions.codeLineHeight = codeLineHeight.value;
+  // Links
+  styleOptions.linkUnderline = linkUnderline.checked;
+  // Headings
+  styleOptions.headingMarginTop = headingMarginTop.value;
+  styleOptions.headingMarginBottom = headingMarginBottom.value;
+  // Blockquote
+  styleOptions.blockquoteBorderColor = blockquoteBorderColor.value;
+  styleOptions.blockquoteBackground = blockquoteBackground.value;
+  // Text & Spacing
+  styleOptions.textAlignment = textAlignment.value;
+  styleOptions.letterSpacing = letterSpacing.value;
+  styleOptions.wordSpacing = wordSpacing.value;
+  // PDF Headers/Footers
+  styleOptions.pdfHeaderText = pdfHeaderText.value;
+  styleOptions.pdfFooterText = pdfFooterText.value;
+  styleOptions.pdfPageNumbers = pdfPageNumbers.checked;
+  styleOptions.pdfPageNumberPosition = pdfPageNumberPosition.value;
 
-  // Refresh preview if a file is selected
+  // Refresh preview - always update both if they have content
+  // Regenerate editor preview if it has content
+  if (editorContent.trim()) {
+    generateEditorPreview();
+  }
+  // Refresh file preview if a file is selected
   if (selectedFileIndex !== null) {
     const file = selectedFiles[selectedFileIndex];
     generatePreview(file.path, file.name);
@@ -282,20 +599,44 @@ function onStyleChange() {
 }
 
 // Add change listeners to all style controls
-[fontFamily, fontSize, lineHeight, headingFont,
- pageMargins, contentWidth, paragraphSpacing,
- textColor, backgroundColor, headingColor, linkColor,
- codeBackground, codeTextColor].forEach(control => {
-  control.addEventListener('change', onStyleChange);
-  // For color inputs, also listen to 'input' for real-time updates
-  if (control.type === 'color') {
-    control.addEventListener('input', onStyleChange);
+const allStyleControls = [
+  fontFamily, fontSize, lineHeight, headingFont,
+  pageMargins, pageMarginCustom, contentWidth, paragraphSpacing,
+  textColor, backgroundColor, headingColor, linkColor,
+  codeBackground, codeTextColor,
+  // New controls
+  tableBorders, tableAlternateRows, tableBorderWidth, tableCellPadding,
+  tableHeaderBackground, tableHeaderText,
+  imageMaxWidth, imageAlignment, imageSpacing,
+  listBulletStyle, listNumberStyle, listIndentation, listItemSpacing,
+  codeBorderRadius, codePadding, codeLineHeight,
+  linkUnderline,
+  headingMarginTop, headingMarginBottom,
+  blockquoteBorderColor, blockquoteBackground,
+  textAlignment, letterSpacing, wordSpacing,
+  pdfHeaderText, pdfFooterText, pdfPageNumbers, pdfPageNumberPosition
+];
+
+allStyleControls.forEach(control => {
+  if (control) {
+    control.addEventListener('change', onStyleChange);
+    // For color inputs, also listen to 'input' for real-time updates
+    if (control.type === 'color') {
+      control.addEventListener('input', onStyleChange);
+    }
+    // For text inputs, also listen to 'input'
+    if (control.type === 'text') {
+      control.addEventListener('input', onStyleChange);
+    }
   }
 });
 
 // Generate preview
 async function generatePreview(filePath, fileName) {
   try {
+    // Save current scroll position before updating preview
+    const scrollPosition = previewFrame.contentWindow?.scrollY || 0;
+
     const result = await window.electron.generatePreview({
       mdPath: filePath,
       cssPath: customCssCheck.checked ? customCssPath : null,
@@ -303,8 +644,14 @@ async function generatePreview(filePath, fileName) {
     });
 
     if (result.success) {
-      previewTitle.textContent = `Preview: ${fileName}`;
       previewFrame.srcdoc = result.html;
+
+      // Restore scroll position after content loads
+      setTimeout(() => {
+        if (previewFrame.contentWindow) {
+          previewFrame.contentWindow.scrollTo(0, scrollPosition);
+        }
+      }, 50);
     } else {
       showStatus(`Preview error: ${result.error}`, 'error');
     }
@@ -432,6 +779,21 @@ convertBtn.addEventListener('click', async () => {
   const canConvert = await checkCanConvert();
   if (!canConvert) {
     return;
+  }
+
+  // Ask to save unsaved changes before converting
+  if (unsavedChanges && currentFilePath) {
+    const shouldSave = confirm(`You have unsaved changes. Would you like to save them before converting?\n\nClick OK to save, or Cancel to convert without saving.`);
+    if (shouldSave) {
+      const result = await window.electron.writeFile(currentFilePath, editorContent);
+      if (result.success) {
+        markAsSaved();
+        showStatus('File saved', 'success');
+      } else {
+        showStatus('Error saving file: ' + result.error, 'error');
+        return;
+      }
+    }
   }
 
   // If only one file, use direct save dialog

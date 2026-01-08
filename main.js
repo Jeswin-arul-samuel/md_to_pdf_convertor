@@ -58,6 +58,38 @@ function generateDynamicCSS(options) {
     ? bodyFont
     : (fontFamilies[options.headingFont] || fontFamilies['sans-serif']);
 
+  // List style mappings
+  const listStyleMap = {
+    'disc': 'disc',
+    'circle': 'circle',
+    'square': 'square'
+  };
+
+  const numberStyleMap = {
+    'decimal': 'decimal',
+    'lower-alpha': 'lower-alpha',
+    'upper-alpha': 'upper-alpha',
+    'lower-roman': 'lower-roman',
+    'upper-roman': 'upper-roman'
+  };
+
+  // Image alignment styles
+  const imageAlignmentMap = {
+    'left': 'margin-right: auto; display: block;',
+    'center': 'margin-left: auto; margin-right: auto; display: block;',
+    'right': 'margin-left: auto; display: block;'
+  };
+
+  // Link underline
+  const linkTextDecoration = options.linkUnderline ? 'underline' : 'none';
+
+  // Table border styles
+  const tableBorderStyle = options.tableBorders ? `border: ${options.tableBorderWidth || '1px'} solid #ddd;` : 'border: none;';
+  const tableAlternateRowsCSS = options.tableAlternateRows ? `
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }` : '';
+
   return `
     body {
       font-family: ${bodyFont};
@@ -68,13 +100,16 @@ function generateDynamicCSS(options) {
       max-width: ${options.contentWidth};
       margin: 0 auto;
       padding: 20px;
+      text-align: ${options.textAlignment || 'left'};
+      letter-spacing: ${options.letterSpacing || '0px'};
+      word-spacing: ${options.wordSpacing || '0px'};
     }
 
     h1, h2, h3, h4, h5, h6 {
       font-family: ${headingFontFamily};
       color: ${options.headingColor};
-      margin-top: 1.5em;
-      margin-bottom: 0.5em;
+      margin-top: ${options.headingMarginTop || '1.5em'};
+      margin-bottom: ${options.headingMarginBottom || '0.5em'};
       font-weight: 600;
     }
 
@@ -91,7 +126,7 @@ function generateDynamicCSS(options) {
 
     a {
       color: ${options.linkColor};
-      text-decoration: none;
+      text-decoration: ${linkTextDecoration};
     }
 
     a:hover {
@@ -103,16 +138,17 @@ function generateDynamicCSS(options) {
       background-color: ${options.codeBackground};
       color: ${options.codeTextColor};
       padding: 2px 6px;
-      border-radius: 3px;
+      border-radius: ${options.codeBorderRadius || '3px'};
       font-size: 0.9em;
     }
 
     pre {
       background-color: ${options.codeBackground};
-      padding: 16px;
-      border-radius: 6px;
+      padding: ${options.codePadding || '16px'};
+      border-radius: ${options.codeBorderRadius || '6px'};
       overflow-x: auto;
       margin: 1em 0;
+      line-height: ${options.codeLineHeight || '1.5'};
     }
 
     pre code {
@@ -122,20 +158,28 @@ function generateDynamicCSS(options) {
     }
 
     blockquote {
-      border-left: 4px solid ${options.linkColor};
+      border-left: 4px solid ${options.blockquoteBorderColor || options.linkColor};
+      background-color: ${options.blockquoteBackground || 'transparent'};
       margin: 1em 0;
-      padding-left: 1em;
+      padding: 0.5em 0 0.5em 1em;
       color: #666;
       font-style: italic;
     }
 
-    ul, ol {
-      padding-left: 2em;
+    ul {
+      padding-left: ${options.listIndentation || '2em'};
       margin-bottom: ${options.paragraphSpacing};
+      list-style-type: ${listStyleMap[options.listBulletStyle] || 'disc'};
+    }
+
+    ol {
+      padding-left: ${options.listIndentation || '2em'};
+      margin-bottom: ${options.paragraphSpacing};
+      list-style-type: ${numberStyleMap[options.listNumberStyle] || 'decimal'};
     }
 
     li {
-      margin-bottom: 0.5em;
+      margin-bottom: ${options.listItemSpacing || '0.5em'};
     }
 
     table {
@@ -145,19 +189,23 @@ function generateDynamicCSS(options) {
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px 12px;
+      ${tableBorderStyle}
+      padding: ${options.tableCellPadding || '8px 12px'};
       text-align: left;
     }
 
     th {
-      background-color: ${options.codeBackground};
+      background-color: ${options.tableHeaderBackground || options.codeBackground};
+      color: ${options.tableHeaderText || '#333333'};
       font-weight: 600;
     }
+    ${tableAlternateRowsCSS}
 
     img {
-      max-width: 100%;
+      max-width: ${options.imageMaxWidth || '100%'};
       height: auto;
+      ${imageAlignmentMap[options.imageAlignment] || imageAlignmentMap['left']}
+      margin: ${options.imageSpacing || '16px'} 0;
     }
 
     hr {
@@ -168,7 +216,7 @@ function generateDynamicCSS(options) {
 
     @media print {
       body {
-        padding: ${options.pageMargins};
+        padding: ${options.pageMarginCustom || options.pageMargins || '1in'};
       }
     }
   `;
@@ -199,18 +247,88 @@ function generateHTML(mdPath, cssPath = null, styleOptions = null) {
       }
     }
 
-    // Create complete HTML document
+    // Create complete HTML document with page preview styling
     const fullHtml = `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      background: #f0f0f0;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .page-container > * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-container {
+      background: #e8e8e8;
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px #bbb;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .page-content {
+      background: white;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-margin-guide {
+      position: absolute;
+      border: 1px dashed #ccc;
+      background: transparent;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    body > .page-container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Reset padding from generated CSS */
+    .page-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
     ${css}
   </style>
 </head>
 <body>
-  ${htmlContent}
+  <div class="page-container">
+    <div class="page-content">
+      <div class="page-margin-guide" style="top: 0; left: 0; right: 0; bottom: 0;"></div>
+      <div style="width: 100%; height: 100%; overflow: auto; position: relative;">
+        ${htmlContent}
+      </div>
+    </div>
+  </div>
 </body>
 </html>`;
 
@@ -223,6 +341,166 @@ function generateHTML(mdPath, cssPath = null, styleOptions = null) {
   }
 }
 
+// Helper function to generate HTML from markdown text (not from file)
+function generateHTMLFromText(markdownContent, cssPath = null, styleOptions = null) {
+  try {
+    // Convert markdown to HTML
+    const htmlContent = marked.parse(markdownContent);
+
+    // Determine CSS to use
+    let css = '';
+    if (cssPath && fs.existsSync(cssPath)) {
+      // Custom CSS file takes precedence
+      css = fs.readFileSync(cssPath, 'utf8');
+    } else if (styleOptions) {
+      // Generate dynamic CSS from style options
+      css = generateDynamicCSS(styleOptions);
+    } else {
+      // Fall back to default styling
+      const defaultCss = path.join(__dirname, 'assets', 'default-style.css');
+      if (fs.existsSync(defaultCss)) {
+        css = fs.readFileSync(defaultCss, 'utf8');
+      }
+    }
+
+    // Create complete HTML document with page preview styling
+    const fullHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      background: #f0f0f0;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .page-container > * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-container {
+      background: #e8e8e8;
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1), 0 0 0 1px #bbb;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .page-content {
+      background: white;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-margin-guide {
+      position: absolute;
+      border: 1px dashed #ccc;
+      background: transparent;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    body > .page-container {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Reset padding from generated CSS */
+    .page-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    ${css}
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-content">
+      <div class="page-margin-guide" style="top: 0; left: 0; right: 0; bottom: 0;"></div>
+      <div style="width: 100%; height: 100%; overflow: auto; position: relative;">
+        ${htmlContent}
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    return { success: true, html: fullHtml };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || 'Failed to generate HTML'
+    };
+  }
+}
+
+// Helper function to build header template for PDF
+function buildHeaderTemplate(options) {
+  const headerText = options.pdfHeaderText || '';
+  if (!headerText) {
+    return null;
+  }
+
+  return `
+    <div style="width: 100%; text-align: center; font-size: 12px; padding: 10px; border-bottom: 1px solid #ddd;">
+      ${headerText}
+    </div>
+  `;
+}
+
+// Helper function to build footer template for PDF
+function buildFooterTemplate(options) {
+  const footerText = options.pdfFooterText || '';
+  const showPageNumbers = options.pdfPageNumbers !== false;
+  const position = options.pdfPageNumberPosition || 'footer-right';
+
+  // Determine alignment based on position
+  let alignment = 'right';
+  let positionClass = position.includes('left') ? 'left' : (position.includes('center') ? 'center' : 'right');
+
+  let content = '';
+  if (footerText && showPageNumbers) {
+    content = `${footerText} - <span class="pageNumber"></span>/<span class="totalPages"></span>`;
+  } else if (footerText) {
+    content = footerText;
+  } else if (showPageNumbers) {
+    content = '<span class="pageNumber"></span>/<span class="totalPages"></span>';
+  }
+
+  if (!content) {
+    return null;
+  }
+
+  return `
+    <div style="width: 100%; text-align: ${positionClass}; font-size: 12px; padding: 10px 20px; border-top: 1px solid #ddd;">
+      ${content}
+    </div>
+  `;
+}
+
 // Convert markdown to PDF using Puppeteer
 async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null) {
   let browser;
@@ -233,7 +511,7 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
     }
 
     // Get margins from styleOptions or use default
-    const margins = styleOptions ? styleOptions.pageMargins : '1in';
+    const margins = styleOptions ? (styleOptions.pageMarginCustom || styleOptions.pageMargins || '1in') : '1in';
 
     // Launch Puppeteer
     browser = await puppeteer.launch({
@@ -244,8 +522,12 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
     const page = await browser.newPage();
     await page.setContent(htmlResult.html, { waitUntil: 'networkidle0' });
 
-    // Generate PDF
-    await page.pdf({
+    // Build header and footer templates
+    const headerTemplate = styleOptions ? buildHeaderTemplate(styleOptions) : null;
+    const footerTemplate = styleOptions ? buildFooterTemplate(styleOptions) : null;
+
+    // Generate PDF with headers/footers if needed
+    const pdfOptions = {
       path: pdfPath,
       format: 'A4',
       margin: {
@@ -255,7 +537,20 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
         left: margins
       },
       printBackground: true
-    });
+    };
+
+    // Add header/footer if they exist
+    if (headerTemplate || footerTemplate) {
+      pdfOptions.displayHeaderFooter = true;
+      if (headerTemplate) {
+        pdfOptions.headerTemplate = headerTemplate;
+      }
+      if (footerTemplate) {
+        pdfOptions.footerTemplate = footerTemplate;
+      }
+    }
+
+    await page.pdf(pdfOptions);
 
     await browser.close();
 
@@ -359,6 +654,19 @@ ipcMain.handle('generate-preview', async (event, { mdPath, cssPath, styleOptions
   }
 });
 
+// Generate preview from markdown text (for editor mode)
+ipcMain.handle('generate-preview-from-text', async (event, { markdownText, cssPath, styleOptions }) => {
+  try {
+    const htmlResult = generateHTMLFromText(markdownText, cssPath, styleOptions);
+    return htmlResult;
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message || 'Failed to generate preview'
+    };
+  }
+});
+
 // Select output folder for batch conversion
 ipcMain.handle('select-output-folder', async () => {
   const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
@@ -383,6 +691,91 @@ ipcMain.handle('convert-to-pdf-batch', async (event, { mdPath, pdfPath, cssPath,
       success: false,
       error: error.message || 'Failed to convert file'
     };
+  }
+});
+
+// Convert markdown text to PDF (for editor mode)
+ipcMain.handle('convert-text-to-pdf', async (event, { markdownText, pdfPath, cssPath, styleOptions }) => {
+  let browser;
+  try {
+    const htmlResult = generateHTMLFromText(markdownText, cssPath, styleOptions);
+    if (!htmlResult.success) {
+      return htmlResult;
+    }
+
+    // Get margins from styleOptions or use default
+    const margins = styleOptions ? (styleOptions.pageMarginCustom || styleOptions.pageMargins || '1in') : '1in';
+
+    // Launch Puppeteer
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+    await page.setContent(htmlResult.html, { waitUntil: 'networkidle0' });
+
+    // Build header and footer templates
+    const headerTemplate = styleOptions ? buildHeaderTemplate(styleOptions) : null;
+    const footerTemplate = styleOptions ? buildFooterTemplate(styleOptions) : null;
+
+    // Generate PDF with headers/footers if needed
+    const pdfOptions = {
+      path: pdfPath,
+      format: 'A4',
+      margin: {
+        top: margins,
+        right: margins,
+        bottom: margins,
+        left: margins
+      },
+      printBackground: true
+    };
+
+    // Add header/footer if they exist
+    if (headerTemplate || footerTemplate) {
+      pdfOptions.displayHeaderFooter = true;
+      if (headerTemplate) {
+        pdfOptions.headerTemplate = headerTemplate;
+      }
+      if (footerTemplate) {
+        pdfOptions.footerTemplate = footerTemplate;
+      }
+    }
+
+    await page.pdf(pdfOptions);
+
+    await browser.close();
+
+    return { success: true, message: 'PDF generated successfully' };
+  } catch (error) {
+    if (browser) {
+      await browser.close();
+    }
+    return {
+      success: false,
+      error: error.message || 'Failed to convert to PDF'
+    };
+  }
+});
+
+// Read file content
+ipcMain.handle('read-file', async (event, { filePath }) => {
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    return { success: true, content };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Write file content
+ipcMain.handle('write-file', async (event, { filePath, content }) => {
+  try {
+    fs.writeFileSync(filePath, content, 'utf8');
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
   }
 });
 
