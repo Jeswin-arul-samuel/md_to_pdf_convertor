@@ -93,10 +93,10 @@ After the trial, purchase a lifetime license to continue using the app:
 
 ### Linux
 
-| Package | Description | |
+| Package | Description | Downloads |
 |---------|-------------|:---:|
 | **Debian/Ubuntu** | For Debian-based distributions | [![Download](https://img.shields.io/badge/Download-.deb-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/md_to_pdf_2.0.0_amd64.deb) |
-| **AppImage** | Universal Linux package | [![Download](https://img.shields.io/badge/Download-AppImage-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/MD.to.PDF.Converter-2.0.0.AppImage) |
+| **AppImage** | Universal Linux package (portable) | [![Download AppImage](https://img.shields.io/badge/Download-AppImage-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/MD.to.PDF.Converter-2.0.0.AppImage) [![Download Wrapper](https://img.shields.io/badge/Download-Wrapper%20Script-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/md-to-pdf-wrapper.sh) |
 
 ---
 
