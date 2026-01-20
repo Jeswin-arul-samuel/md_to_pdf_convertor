@@ -13,6 +13,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    fullscreen: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -53,6 +54,195 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+// Generate dynamic CSS for PDF export (no max-width restrictions)
+function generateDynamicCSSForPDF(options) {
+  const fontFamilies = {
+    'serif': 'Georgia, "Times New Roman", serif',
+    'sans-serif': '"Helvetica Neue", Arial, sans-serif',
+    'monospace': '"Courier New", Consolas, monospace'
+  };
+
+  const bodyFont = fontFamilies[options.fontFamily] || fontFamilies['serif'];
+  const headingFontFamily = options.headingFont === 'same'
+    ? bodyFont
+    : (fontFamilies[options.headingFont] || fontFamilies['sans-serif']);
+
+  const listStyleMap = {
+    'disc': 'disc',
+    'circle': 'circle',
+    'square': 'square'
+  };
+
+  const numberStyleMap = {
+    'decimal': 'decimal',
+    'lower-alpha': 'lower-alpha',
+    'upper-alpha': 'upper-alpha',
+    'lower-roman': 'lower-roman',
+    'upper-roman': 'upper-roman'
+  };
+
+  const imageAlignmentMap = {
+    'left': 'margin-right: auto; display: block;',
+    'center': 'margin-left: auto; margin-right: auto; display: block;',
+    'right': 'margin-left: auto; display: block;'
+  };
+
+  const linkTextDecoration = options.linkUnderline ? 'underline' : 'none';
+  const tableBorderStyle = options.tableBorders ? `border: ${options.tableBorderWidth || '1px'} solid #ddd;` : 'border: none;';
+  const tableAlternateRowsCSS = options.tableAlternateRows ? `
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }` : '';
+
+  return `
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: ${bodyFont};
+      font-size: ${options.fontSize};
+      line-height: ${options.lineHeight};
+      color: ${options.textColor};
+      background-color: ${options.backgroundColor};
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+      text-align: ${options.textAlignment || 'left'};
+      letter-spacing: ${options.letterSpacing || '0px'};
+      word-spacing: ${options.wordSpacing || '0px'};
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: ${headingFontFamily};
+      color: ${options.headingColor};
+      margin-top: ${options.headingMarginTop || '1.5em'};
+      margin-bottom: ${options.headingMarginBottom || '0.5em'};
+      font-weight: 600;
+      width: 100%;
+      max-width: none;
+    }
+
+    h1 { font-size: 2em; }
+    h2 { font-size: 1.5em; }
+    h3 { font-size: 1.25em; }
+    h4 { font-size: 1em; }
+    h5 { font-size: 0.875em; }
+    h6 { font-size: 0.85em; }
+
+    p {
+      margin: 1em 0;
+      width: 100%;
+      max-width: none;
+    }
+
+    a {
+      color: ${options.linkColor};
+      text-decoration: ${linkTextDecoration};
+    }
+
+    code {
+      background-color: ${options.codeBackground};
+      color: ${options.codeColor};
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+
+    pre {
+      background-color: ${options.codeBackground};
+      color: ${options.codeColor};
+      padding: ${options.codeBlockPadding || '12px'};
+      border-radius: ${options.codeBlockRadius || '4px'};
+      overflow-x: auto;
+      line-height: ${options.codeBlockLineHeight || '1.5'};
+      width: 100%;
+      max-width: none;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    blockquote {
+      border-left: 4px solid ${options.blockquoteBorderColor || '#ccc'};
+      background-color: ${options.blockquoteBackground || '#f9f9f9'};
+      padding: 10px 15px;
+      margin: 1em 0;
+      font-style: italic;
+      width: 100%;
+      max-width: none;
+    }
+
+    ul {
+      list-style-type: ${listStyleMap[options.listBulletStyle] || 'disc'};
+      margin: 1em 0;
+      padding-left: ${options.listIndentation || '2em'};
+      width: 100%;
+      max-width: none;
+    }
+
+    ol {
+      list-style-type: ${numberStyleMap[options.listNumberStyle] || 'decimal'};
+      margin: 1em 0;
+      padding-left: ${options.listIndentation || '2em'};
+      width: 100%;
+      max-width: none;
+    }
+
+    li {
+      margin: ${options.listItemSpacing || '0.5em'} 0;
+    }
+
+    table {
+      width: 100% !important;
+      max-width: none !important;
+      ${tableBorderStyle}
+      border-collapse: collapse;
+      margin: 1em 0;
+    }
+
+    th, td {
+      ${tableBorderStyle}
+      padding: ${options.tableCellPadding || '8px 12px'};
+      text-align: left;
+    }
+
+    th {
+      background-color: ${options.tableHeaderBackground || options.codeBackground};
+      color: ${options.tableHeaderText || '#333333'};
+      font-weight: 600;
+    }
+    ${tableAlternateRowsCSS}
+
+    img {
+      max-width: ${options.imageMaxWidth || '100%'};
+      height: auto;
+      ${imageAlignmentMap[options.imageAlignment] || imageAlignmentMap['left']}
+      margin: ${options.imageSpacing || '16px'} 0;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 2em 0;
+      width: 100%;
+      max-width: none;
+    }
+
+    div, section, article {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+  `;
+}
 
 // Generate dynamic CSS from style options
 function generateDynamicCSS(options) {
@@ -232,7 +422,7 @@ function generateDynamicCSS(options) {
 }
 
 // Helper function to generate HTML from markdown
-function generateHTML(mdPath, cssPath = null, styleOptions = null) {
+function generateHTML(mdPath, cssPath = null, styleOptions = null, forPdfExport = false) {
   try {
     // Read the markdown file
     const markdownContent = fs.readFileSync(mdPath, 'utf8');
@@ -240,13 +430,58 @@ function generateHTML(mdPath, cssPath = null, styleOptions = null) {
     // Convert markdown to HTML
     const htmlContent = marked.parse(markdownContent);
 
-    // Determine CSS to use
+    // For PDF export, use clean HTML without preview styling and width restrictions
+    if (forPdfExport) {
+      // Determine CSS to use
+      let css = '';
+      if (cssPath && fs.existsSync(cssPath)) {
+        // Custom CSS file takes precedence
+        css = fs.readFileSync(cssPath, 'utf8');
+      } else if (styleOptions) {
+        // Generate dynamic CSS for PDF (without max-width restrictions)
+        css = generateDynamicCSSForPDF(styleOptions);
+      } else {
+        // Fall back to default styling
+        const defaultCss = path.join(__dirname, 'assets', 'default-style.css');
+        if (fs.existsSync(defaultCss)) {
+          css = fs.readFileSync(defaultCss, 'utf8');
+        }
+      }
+      const fullHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    ${css}
+  </style>
+</head>
+<body>
+  ${htmlContent}
+</body>
+</html>`;
+      return { success: true, html: fullHtml };
+    }
+
+    // For preview, determine CSS to use (with width restrictions for visualization)
     let css = '';
     if (cssPath && fs.existsSync(cssPath)) {
       // Custom CSS file takes precedence
       css = fs.readFileSync(cssPath, 'utf8');
     } else if (styleOptions) {
-      // Generate dynamic CSS from style options
+      // Generate dynamic CSS for preview (with max-width)
       css = generateDynamicCSS(styleOptions);
     } else {
       // Fall back to default styling
@@ -256,7 +491,7 @@ function generateHTML(mdPath, cssPath = null, styleOptions = null) {
       }
     }
 
-    // Create complete HTML document with page preview styling
+    // Create complete HTML document with page preview styling (for preview only)
     const fullHtml = `
 <!DOCTYPE html>
 <html>
@@ -351,18 +586,63 @@ function generateHTML(mdPath, cssPath = null, styleOptions = null) {
 }
 
 // Helper function to generate HTML from markdown text (not from file)
-function generateHTMLFromText(markdownContent, cssPath = null, styleOptions = null) {
+function generateHTMLFromText(markdownContent, cssPath = null, styleOptions = null, forPdfExport = false) {
   try {
     // Convert markdown to HTML
     const htmlContent = marked.parse(markdownContent);
 
-    // Determine CSS to use
+    // For PDF export, use clean HTML without preview styling and width restrictions
+    if (forPdfExport) {
+      // Determine CSS to use
+      let css = '';
+      if (cssPath && fs.existsSync(cssPath)) {
+        // Custom CSS file takes precedence
+        css = fs.readFileSync(cssPath, 'utf8');
+      } else if (styleOptions) {
+        // Generate dynamic CSS for PDF (without max-width restrictions)
+        css = generateDynamicCSSForPDF(styleOptions);
+      } else {
+        // Fall back to default styling
+        const defaultCss = path.join(__dirname, 'assets', 'default-style.css');
+        if (fs.existsSync(defaultCss)) {
+          css = fs.readFileSync(defaultCss, 'utf8');
+        }
+      }
+      const fullHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: white;
+    }
+
+    ${css}
+  </style>
+</head>
+<body>
+  ${htmlContent}
+</body>
+</html>`;
+      return { success: true, html: fullHtml };
+    }
+
+    // For preview, determine CSS to use (with width restrictions for visualization)
     let css = '';
     if (cssPath && fs.existsSync(cssPath)) {
       // Custom CSS file takes precedence
       css = fs.readFileSync(cssPath, 'utf8');
     } else if (styleOptions) {
-      // Generate dynamic CSS from style options
+      // Generate dynamic CSS for preview (with max-width)
       css = generateDynamicCSS(styleOptions);
     } else {
       // Fall back to default styling
@@ -483,7 +763,7 @@ function buildHeaderTemplate(options) {
 // Helper function to build footer template for PDF
 function buildFooterTemplate(options) {
   const footerText = options.pdfFooterText || '';
-  const showPageNumbers = options.pdfPageNumbers !== false;
+  const showPageNumbers = options.pdfPageNumbers === true;
   const position = options.pdfPageNumberPosition || 'footer-right';
 
   // Determine alignment based on position
@@ -514,7 +794,7 @@ function buildFooterTemplate(options) {
 async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null) {
   let browser;
   try {
-    const htmlResult = generateHTML(mdPath, cssPath, styleOptions);
+    const htmlResult = generateHTML(mdPath, cssPath, styleOptions, true);
     if (!htmlResult.success) {
       return htmlResult;
     }
@@ -545,7 +825,8 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
         bottom: margins,
         left: margins
       },
-      printBackground: true
+      printBackground: true,
+      displayHeaderFooter: false  // Disable by default
     };
 
     // Add header/footer if they exist
@@ -553,9 +834,13 @@ async function convertToPDF(mdPath, pdfPath, cssPath = null, styleOptions = null
       pdfOptions.displayHeaderFooter = true;
       if (headerTemplate) {
         pdfOptions.headerTemplate = headerTemplate;
+      } else {
+        pdfOptions.headerTemplate = '<div></div>';  // Empty header
       }
       if (footerTemplate) {
         pdfOptions.footerTemplate = footerTemplate;
+      } else {
+        pdfOptions.footerTemplate = '<div></div>';  // Empty footer
       }
     }
 
@@ -727,7 +1012,7 @@ ipcMain.handle('convert-to-pdf-batch', async (event, { mdPath, pdfPath, cssPath,
 ipcMain.handle('convert-text-to-pdf', async (event, { markdownText, pdfPath, cssPath, styleOptions }) => {
   let browser;
   try {
-    const htmlResult = generateHTMLFromText(markdownText, cssPath, styleOptions);
+    const htmlResult = generateHTMLFromText(markdownText, cssPath, styleOptions, true);
     if (!htmlResult.success) {
       return htmlResult;
     }
@@ -758,7 +1043,8 @@ ipcMain.handle('convert-text-to-pdf', async (event, { markdownText, pdfPath, css
         bottom: margins,
         left: margins
       },
-      printBackground: true
+      printBackground: true,
+      displayHeaderFooter: false  // Disable by default
     };
 
     // Add header/footer if they exist
@@ -766,9 +1052,13 @@ ipcMain.handle('convert-text-to-pdf', async (event, { markdownText, pdfPath, css
       pdfOptions.displayHeaderFooter = true;
       if (headerTemplate) {
         pdfOptions.headerTemplate = headerTemplate;
+      } else {
+        pdfOptions.headerTemplate = '<div></div>';  // Empty header
       }
       if (footerTemplate) {
         pdfOptions.footerTemplate = footerTemplate;
+      } else {
+        pdfOptions.footerTemplate = '<div></div>';  // Empty footer
       }
     }
 

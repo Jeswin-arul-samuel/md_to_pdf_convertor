@@ -2,7 +2,7 @@
 
 A beautiful desktop application to convert Markdown files to PDF with live preview and customizable styling.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.1-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey)
 ![License](https://img.shields.io/badge/license-Source%20Available-orange)
 
@@ -32,7 +32,7 @@ After the trial, purchase a lifetime license to continue using the app:
 - **Zero Dependencies** - No need to install Pandoc, LaTeX, or other tools
 - **Cross-platform** - Works on Windows and Linux
 
-### v2.0.0 New Features ✨
+### v2.0.1 New Features ✨
 - **Comprehensive Styling Options** - Advanced customization without CSS:
   - **Table Styling** - Borders, alternating rows, cell padding, header colors
   - **Image Controls** - Max-width, alignment (left/center/right), spacing
@@ -50,7 +50,7 @@ After the trial, purchase a lifetime license to continue using the app:
 
 ---
 
-## What's New in v2.0.0
+## What's New in v2.0.1
 
 ### Major Features Added
 - **Sidebar Tabs**: Cleaner interface with separate Files and Customize sections
@@ -88,15 +88,15 @@ After the trial, purchase a lifetime license to continue using the app:
 
 | Package | Description | |
 |---------|-------------|:---:|
-| **Setup Installer** | Full installer with Start Menu shortcuts | [![Download](https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/MD.to.PDF.Converter.Setup.2.0.0.exe) |
-| **Portable** | No installation required, run directly | [![Download](https://img.shields.io/badge/Download-Portable.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/MD.to.PDF.Converter-Portable-2.0.0.exe) |
+| **Setup Installer** | Full installer with Start Menu shortcuts | [![Download](https://img.shields.io/badge/Download-Setup.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.1/MD.to.PDF.Converter.Setup.2.0.1.exe) |
+| **Portable** | No installation required, run directly | [![Download](https://img.shields.io/badge/Download-Portable.exe-blue?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.1/MD.to.PDF.Converter-Portable-2.0.1.exe) |
 
 ### Linux
 
 | Package | Description | Downloads |
 |---------|-------------|:---:|
-| **Debian/Ubuntu** | For Debian-based distributions | [![Download](https://img.shields.io/badge/Download-.deb-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/md_to_pdf_2.0.0_amd64.deb) |
-| **AppImage** | Universal Linux package (portable) | [![Download AppImage](https://img.shields.io/badge/Download-AppImage-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/MD.to.PDF.Converter-2.0.0.AppImage) [![Download Wrapper](https://img.shields.io/badge/Download-Wrapper%20Script-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.0/md-to-pdf-wrapper.sh) |
+| **Debian/Ubuntu** | For Debian-based distributions | [![Download](https://img.shields.io/badge/Download-.deb-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.1/md_to_pdf_2.0.1_amd64.deb) |
+| **AppImage** | Universal Linux package (portable) | [![Download AppImage](https://img.shields.io/badge/Download-AppImage-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.1/MD.to.PDF.Converter-2.0.1.AppImage) [![Download Wrapper](https://img.shields.io/badge/Download-Wrapper%20Script-orange?style=for-the-badge)](https://github.com/Jeswin-arul-samuel/md_to_pdf_convertor/releases/download/v2.0.1/md-to-pdf-wrapper.sh) |
 
 ---
 
@@ -116,7 +116,7 @@ This option provides the most integrated Windows experience with Start Menu shor
 
 **Installation Steps:**
 
-1. Download `MD to PDF Converter Setup 2.0.0.exe`
+1. Download `MD to PDF Converter Setup 2.0.1.exe`
 
 2. Run the installer:
    - Double-click the `.exe` file
@@ -143,7 +143,7 @@ Use this option if you prefer a standalone executable with no system installatio
 
 **Installation Steps:**
 
-1. Download `MD to PDF Converter-Portable-2.0.0.exe`
+1. Download `MD to PDF Converter-Portable-2.0.1.exe`
 
 2. Place it anywhere convenient:
    - Desktop
@@ -205,11 +205,11 @@ This is the traditional Linux installation method. The package will integrate wi
 
 **Installation Steps:**
 
-1. Download `md_to_pdf_2.0.0_amd64.deb`
+1. Download `md_to_pdf_2.0.1_amd64.deb`
 
 2. Install the package:
 ```bash
-sudo dpkg -i md_to_pdf_2.0.0_amd64.deb
+sudo dpkg -i md_to_pdf_2.0.1_amd64.deb
 ```
 
 3. **Important:** If you see dependency errors, run this to automatically install missing dependencies:
@@ -249,7 +249,7 @@ If you prefer a portable installation or have issues with the .deb, use the AppI
 
 **Installation Steps:**
 
-1. Download `MD to PDF Converter-2.0.0.AppImage`
+1. Download `MD to PDF Converter-2.0.1.AppImage`
 
 2. Download the wrapper script `md-to-pdf-wrapper.sh` (from the same release)
 
@@ -271,8 +271,8 @@ The wrapper script automatically handles sandbox configuration that's required o
 
 If you don't have the wrapper script:
 ```bash
-chmod +x "MD to PDF Converter-2.0.0.AppImage"
-ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.0.AppImage"
+chmod +x "MD to PDF Converter-2.0.1.AppImage"
+ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.1.AppImage"
 ```
 
 **Optional: Move to permanent location:**
@@ -280,7 +280,7 @@ ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.0.AppImage"
 If you want to run it from anywhere:
 ```bash
 mkdir -p ~/.local/bin
-mv "MD to PDF Converter-2.0.0.AppImage" ~/.local/bin/md-to-pdf
+mv "MD to PDF Converter-2.0.1.AppImage" ~/.local/bin/md-to-pdf
 mv md-to-pdf-wrapper.sh ~/.local/bin/
 chmod +x ~/.local/bin/md-to-pdf-wrapper.sh
 
@@ -303,7 +303,7 @@ Simply delete the AppImage file(s). No system integration to remove.
 
 ## Usage Guide
 
-### Sidebar Tabs (v2.0.0)
+### Sidebar Tabs (v2.0.1)
 
 The sidebar now has two tabs for better organization:
 
@@ -357,13 +357,13 @@ Access the **Customize tab** to customize your PDF without writing CSS. All opti
 | Code Background | #f5f5f5 |
 | Code Text | #c7254e |
 
-#### Margins (v2.0.0) NEW
+#### Margins (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Custom Page Margin | Set custom margins in any unit: inches (in), centimeters (cm), millimeters (mm), pixels (px), points (pt) |
 | Example | `1in`, `2.5cm`, `20mm`, `96px` |
 
-#### Table Styling (v2.0.0) NEW
+#### Table Styling (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Show Borders | Toggle table borders on/off |
@@ -373,14 +373,14 @@ Access the **Customize tab** to customize your PDF without writing CSS. All opti
 | Header Background | Color of table headers |
 | Header Text Color | Text color for table headers |
 
-#### Image Styling (v2.0.0) NEW
+#### Image Styling (v2.0.1) NEW
 | Option | Values |
 |--------|--------|
 | Max Width | Set maximum image width (e.g., 100%, 500px) |
 | Alignment | Left, Center, Right |
 | Spacing | Margin around images |
 
-#### List Styling (v2.0.0) NEW
+#### List Styling (v2.0.1) NEW
 | Option | Values |
 |--------|--------|
 | Bullet Style | Disc (●), Circle (○), Square (■) |
@@ -388,38 +388,38 @@ Access the **Customize tab** to customize your PDF without writing CSS. All opti
 | Indentation | Customizable list indentation |
 | Item Spacing | Space between list items |
 
-#### Code Block Styling (v2.0.0) NEW
+#### Code Block Styling (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Border Radius | Corner roundness of code blocks |
 | Padding | Internal spacing in code blocks |
 | Line Height | Space between code lines |
 
-#### Heading Spacing (v2.0.0) NEW
+#### Heading Spacing (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Top Margin | Space above headings |
 | Bottom Margin | Space below headings |
 
-#### Link Styling (v2.0.0) NEW
+#### Link Styling (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Underline | Toggle underline for links |
 
-#### Blockquote Styling (v2.0.0) NEW
+#### Blockquote Styling (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Border Color | Color of blockquote left border |
 | Background Color | Background color for blockquotes |
 
-#### Text & Spacing (v2.0.0) NEW
+#### Text & Spacing (v2.0.1) NEW
 | Option | Values |
 |--------|--------|
 | Text Alignment | Left, Center, Right, Justify |
 | Letter Spacing | Space between letters |
 | Word Spacing | Space between words |
 
-#### PDF Headers & Footers (v2.0.0) NEW
+#### PDF Headers & Footers (v2.0.1) NEW
 | Option | Description |
 |--------|-------------|
 | Header Text | Custom header text (optional) |
@@ -570,7 +570,7 @@ This is expected and normal. The solution is simple:
 
 2. **Or run with sandbox disabled**:
 ```bash
-ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.0.AppImage"
+ELECTRON_DISABLE_SANDBOX=1 ./"MD to PDF Converter-2.0.1.AppImage"
 ```
 
 The wrapper script automatically handles this for you, so you don't need to manually set the environment variable each time.
