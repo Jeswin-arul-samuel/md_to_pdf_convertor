@@ -3,7 +3,7 @@
 # This wrapper handles sandbox configuration for Linux systems
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-APPIMAGE="$SCRIPT_DIR/MD to PDF Converter-2.0.0.AppImage"
+APPIMAGE="$SCRIPT_DIR/MD to PDF Converter-2.0.1.AppImage"
 
 # Check if AppImage exists
 if [ ! -f "$APPIMAGE" ]; then
